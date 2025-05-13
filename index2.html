@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .students{
+        background-color: #222;
+        padding: 10px;
+    }
+
+    .container{
+        background-color: #666;
+        display: grid;
+        grid-template-columns: 200px 1fr 50px 50px;
+        gap: 8px;
+        margin: 10px;
+        padding: 3px;
+    }
+
+    .i, .n, .e, .g{
+        background-color: #fff;
+        padding: 5px;
+    }
+
+    .container:nth-child(2n){
+        background-color: #ccc;
+    }
+</style>
+<body>
+    <h2>STUDENTS LIST</h2>
+    <div class="students"></div>
+    <script>
+        let token='';
+        fetch('https://homework-vwuh.onrender.com/api/auth/login', {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    username: 'pablito',
+                    password: 'pablito123'
+                })
+        })
+        .then(res=>res.json())
+        .then(res=> {
+            token = res.token;
+            console.log(token)
+                if (!token) {
+                    console.log('No se recibió un token. Registro probablemente falló.');
+                    return;
+                }
+                fetch('https://homework-vwuh.onrender.com/api/students', {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(element => {
+                    crear(element._id, element.name, element.age, element.grade);
+                });
+                console.log(data)
+            })
+            .catch(e => {
+                console.error('Error al obtener estudiantes:', e);
+            });
+        });
+
+        function crear(id, nombre, edad, grado){
+            const ct = document.createElement('div');
+            const i = document.createElement('div');
+            const n = document.createElement('div');
+            const e = document.createElement('div');
+            const g = document.createElement('div');
+
+            i.textContent=id;
+            n.textContent=nombre;
+            e.textContent=edad;
+            g.textContent=grado;
+
+            ct.appendChild(i);
+            ct.appendChild(n);
+            ct.appendChild(e);
+            ct.appendChild(g);
+
+            ct.classList.add('container');
+            i.classList.add('i');
+            n.classList.add('n');
+            e.classList.add('e');
+            g.classList.add('g');
+
+            document.querySelector('.students').appendChild(ct);
+        }
+    </script>
+</body>
+</html>
